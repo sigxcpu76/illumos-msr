@@ -1,8 +1,10 @@
-# A (very) draft MSR access driver for Illumos
+A (very) draft MSR access driver for Illumos
+============================================
 
 The skeleton was the cpuid driver.
 
-Usage: 
+Usage
+-----
 
 The device file ```/dev/cpu/self/msr``` is open and read at the offset corresponding to the requested MSR. 64 bits are returned.
 
@@ -14,3 +16,20 @@ Issues:
 - the ```/dev/cpu/self/msr``` link is not created automatically. Should point to ```/devices/pseudo/msr@0:self```
 
 
+Install
+-------
+
+```make install```
+
+Test
+----
+
+```./coretemp```
+
+```console
+Package temperature: 35
+Core 0 temperature: 29
+Core 1 temperature: 29
+Core 2 temperature: 26
+Core 3 temperature: 35
+```
