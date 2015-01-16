@@ -24,9 +24,8 @@ Install
 Test
 ----
 
-```./coretemp```
-
 ```console
+./coretemp
 Package temperature: 35
 Core 0 temperature: 29
 Core 1 temperature: 29
