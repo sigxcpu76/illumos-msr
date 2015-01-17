@@ -11,9 +11,11 @@ The device file ```/dev/cpu/self/msr``` is open and read at the offset correspon
 Included is a sample usage application: ```coretemp``` which reads the Intel CPU cores temperature.
 
 Issues:
-- no ```wrmsr``` support
 - crashes if invalid MSR register is used (?)
 - the ```/dev/cpu/self/msr``` link is not created automatically. Should point to ```/devices/pseudo/msr@0:self```
+- ```wrmsr``` untested
+- no security checks
+
 
 
 Install
