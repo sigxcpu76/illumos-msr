@@ -12,7 +12,7 @@ Included is a sample usage application: ```coretemp``` which reads the Intel CPU
 
 Issues:
 - no ```wrmsr``` support
-- crashes if wrong MSR register is used (?)
+- crashes if invalid MSR register is used (?)
 - the ```/dev/cpu/self/msr``` link is not created automatically. Should point to ```/devices/pseudo/msr@0:self```
 
 

@@ -157,6 +157,32 @@ msr_read(dev_t dev, uio_t *uio, cred_t *cr)
 
 }
 
+static int
+msr_write(dev_t dev, uio_t *uio, cred_t *cr)
+{
+	uint64_t msr;
+	int error = 0;
+
+	if (!is_x86_feature(x86_featureset, X86FSET_MSR))
+		return (ENXIO);
+
+	if(uio->uio_resid < sizeof(msr)) 
+		return (EINVAL);
+	
+	u_offset_t uoff;
+	if((uoff = (u_offset_t) uio->uio_loffset) > 0xffffffff) 
+		return (EINVAL);
+
+	if((error = uiomove(&msr, sizeof(msr), UIO_WRITE, uio)) != 0) 
+		return (error);
+
+	if((error = checked_wrmsr(uoff, msr)) != 0) 
+		return (error);
+
+	return (0);
+}
+
+
 
 /*ARGSUSED*/
 
@@ -167,7 +193,7 @@ static struct cb_ops msr_cb_ops = {
 	nodev,		/* print */
 	nodev,		/* dump */
 	msr_read,
-	nodev,		/* write */
+	msr_write,		/* write */
 	nodev,
 	nodev,		/* devmap */
 	nodev,		/* mmap */
