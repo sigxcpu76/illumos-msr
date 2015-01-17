@@ -239,16 +239,16 @@ int
 _init(void)
 {
 	return (mod_install(&modl));
-}
+};
 
 int
 _fini(void)
 {
 	return (mod_remove(&modl));
-}
+};
 
 int
 _info(struct modinfo *modinfo)
 {
 	return (mod_info(&modl, modinfo));
-}
+};

@@ -25,7 +25,6 @@ char *getKStatString(kstat_ctl_t *kernelDesc, char *moduleName, char *recordName
          main(int argc, char *argv[])
          {
                  int d;
-                 char *s;
 
 		 if ((kernelDesc = kstat_open()) == NULL) {
 		      perror("kstat_open");
@@ -47,7 +46,7 @@ char *getKStatString(kstat_ctl_t *kernelDesc, char *moduleName, char *recordName
                  }
 		 // package temp
 		 if(pread(d, &msr, sizeof(msr), 0x1b1) == sizeof(msr)) {
-			 	int temp = tj_max - (msr >> 16) & 0x7f;
+			 	int temp = tj_max - ((msr >> 16) & 0x7f);
 			 	printf("Package temperature: %d\n", temp);
 		 }
 		 int i;
@@ -66,9 +65,6 @@ char *getKStatString(kstat_ctl_t *kernelDesc, char *moduleName, char *recordName
 
 		 return(0);
 
-         fail:
-                 (void) close(d);
-                 return (1);
          }
 
 long getKStatNumber(kstat_ctl_t *kernelDesc, char *moduleName, 
