@@ -136,26 +136,25 @@ msr_read(dev_t dev, uio_t *uio, cred_t *cr)
 	if (uio->uio_resid & (sizeof (msr) - 1))
 		return (EINVAL);
 
-	while (uio->uio_resid > 0) {
-		u_offset_t uoff;
-
-		if ((uoff = (u_offset_t)uio->uio_loffset) > 0xffffffff) {
-			error = EINVAL;
-			break;
-		}
-
-		//cmn_err(CE_NOTE, "Reading MSR %lu", (unsigned long)uoff);
-		if((error = checked_rdmsr(uoff, &msr)) != 0)  {
-			break;
-		}
-
-
-		if ((error = uiomove(&msr, sizeof (msr), UIO_READ, uio)) != 0)
-			break;
-		uio->uio_loffset = uoff + 1;
+	if(uio->uio_resid < sizeof(msr)) {
+		return (EINVAL);
 	}
 
-	return (error);
+	u_offset_t uoff;
+	if ((uoff = (u_offset_t) uio->uio_loffset) > 0xffffffff) {
+		return (EINVAL);
+	}
+
+	if((error = checked_rdmsr(uoff, &msr)) != 0) {
+		return (error);
+	}
+
+	if((error = uiomove(&msr, sizeof (msr), UIO_READ, uio)) != 0) {
+		return (error);
+	}
+
+	return (0);
+
 }
 
 

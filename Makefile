@@ -20,4 +20,5 @@ clean:
 install: all
 	cp msr /kernel/drv/amd64/
 	cp msr.conf /kernel/drv/
+	rem_drv msr
 	add_drv msr
