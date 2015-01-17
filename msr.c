@@ -101,6 +101,11 @@ msr_attach(dev_info_t *devi, ddi_attach_cmd_t cmd)
 
 	int result = (ddi_create_minor_node(devi, MSR_DRIVER_SELF_NODE, S_IFCHR,
 	    MSR_SELF_MSR_MINOR, DDI_PSEUDO, 0));
+	if(result == 0) {
+		cmn_err(CE_NOTE, "Started MSR driver");
+	} else {
+		cmn_err(CE_NOTE, "Failed to start MSR driver: %d", result);
+	}
 	//cmn_err(CE_NOTE, "Attach result: %d", result);
 	return result;
 }
