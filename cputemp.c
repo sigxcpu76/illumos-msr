@@ -16,9 +16,6 @@ typedef struct {
   uint32_t eax, ebx, ecx, edx;
 } regs_t;
 
-int read_msr(uint32_t msr_index, uint64_t *result) {
-  return read_msr_on_cpu(0, msr_index, result);
-}
 
 int read_msr_on_cpu(int cpu_index, uint32_t msr_index, uint64_t *result) {
   int d;
@@ -38,9 +35,10 @@ int read_msr_on_cpu(int cpu_index, uint32_t msr_index, uint64_t *result) {
   }
 }
 
-int read_cpuid(uint32_t cpuid_func, regs_t *regs) {
-  return read_cpuid_on_cpu(0, cpuid_func, regs);
+int read_msr(uint32_t msr_index, uint64_t *result) {
+  return read_msr_on_cpu(0, msr_index, result);
 }
+
 
 int read_cpuid_on_cpu(int cpu_index, uint32_t cpuid_func, regs_t *regs) {
   int d;
@@ -66,6 +64,10 @@ int read_cpuid_on_cpu(int cpu_index, uint32_t cpuid_func, regs_t *regs) {
   return(0);
 }
 
+int read_cpuid(uint32_t cpuid_func, regs_t *regs) {
+  return read_cpuid_on_cpu(0, cpuid_func, regs);
+}
+
 void temp_to_str(char *str, int temp) {
   if(temp == -1) {
     sprintf(str, "n/a");
@@ -76,8 +78,10 @@ void temp_to_str(char *str, int temp) {
 
 int main() {
 
-  // initialize cpu information first
   regs_t regs;
+  /*
+  // initialize cpu information first
+  
   read_cpuid(1, &regs);
 
   int stepping = regs.eax & 0x0f;
@@ -98,7 +102,7 @@ int main() {
     return(1);
   }
   //printf("has_package_temp_monitor=%d\n", has_package_temp_monitor);
-
+  */
   int cores = sysconf(_SC_NPROCESSORS_ONLN);
 
   int i;

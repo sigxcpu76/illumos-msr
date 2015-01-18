@@ -3,7 +3,7 @@ KFLAGS=-D_KERNEL -m64 -mcmodel=kernel -mno-red-zone -ffreestanding -nodefaultlib
 LDFLAGS=-lkstat
 KLDFLAGS=-r 
 
-all: msr coretemp
+all: msr cputemp
 
 msr.o: msr.c
 	gcc $(CFLAGS) $(KFLAGS) -c msr.c
@@ -11,11 +11,11 @@ msr.o: msr.c
 msr: msr.o
 	ld $(KLDFLAGS) -o msr msr.o
 
-coretemp: coretemp.c
-	gcc $(CFLAGS) -o coretemp $(LDFLAGS) coretemp.c
+cputemp: cputemp.c
+	gcc $(CFLAGS) -o cputemp $(LDFLAGS) cputemp.c
 
 clean: 
-	rm msr.o msr coretemp
+	rm msr.o msr cputemp
 
 install: all
 	cp msr /kernel/drv/amd64/
