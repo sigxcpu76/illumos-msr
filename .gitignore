@@ -4,6 +4,8 @@
 # Custom files
 coretemp
 msr
+cpuinfo
+psrinfo
 
 # Object files
 *.o
