@@ -26,11 +26,12 @@ char *getKStatString(kstat_ctl_t *kernelDesc, char *moduleName, char *recordName
          {
                  int d;
 
-		 if ((kernelDesc = kstat_open()) == NULL) {
+		 /*if ((kernelDesc = kstat_open()) == NULL) {
 		      perror("kstat_open");
 		 } else {
 			cores = getKStatNumber(kernelDesc, "cpu_info", "cpu_info0", "ncore_per_chip");
-		 }
+		 }*/
+		 cores = sysconf(_SC_NPROCESSORS_ONLN);
 
 		 
 
