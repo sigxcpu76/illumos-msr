@@ -8,11 +8,10 @@ Usage
 
 The device file ```/dev/cpu/self/msr``` is open and read at the offset corresponding to the requested MSR. 64 bits are returned.
 
-Included is a sample usage application: ```cputemp``` that reads the Intel CPU cores temperature using various MSRs.
+Included is a sample usage application that reads the Intel CPU cores temperature using various MSRs.
 
 Issues:
-- crashes if invalid MSR register is used (?)
-- the ```/dev/cpu/self/msr``` link is not created automatically. Should point to ```/devices/pseudo/msr@0:self```
+- crashes kernel if invalid MSR register is used 
 - ```wrmsr``` untested
 - no security checks
 
