@@ -45,10 +45,10 @@ char *getKStatString(kstat_ctl_t *kernelDesc, char *moduleName, char *recordName
                       tj_max = (msr >> 16) & 0x7f;
                  }
 		 // package temp
-		 if(pread(d, &msr, sizeof(msr), 0x1b1) == sizeof(msr)) {
+		 /*if(pread(d, &msr, sizeof(msr), 0x1b1) == sizeof(msr)) {
 			 	int temp = tj_max - ((msr >> 16) & 0x7f);
 			 	printf("Package temperature: %d\n", temp);
-		 }
+		 }*/
 		 int i;
 		 for(i = 0; i < cores; i++) {
 			 processor_bind(P_LWPID, P_MYID, i, NULL);
