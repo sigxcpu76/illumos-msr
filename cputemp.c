@@ -125,6 +125,7 @@ int main() {
   }
 
 
+  kstat_close(kstat);
 
   return 0;
 
