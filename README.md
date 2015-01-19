@@ -25,14 +25,31 @@ Install
 Test
 ----
 
+A single socket machine (Xeon E3-1265L V2):
+
 ```console
 # ./cputemp
-CPU 0: core_temp=34 package_temp=41 tj_max=94
-CPU 1: core_temp=35 package_temp=41 tj_max=94
-CPU 2: core_temp=33 package_temp=41 tj_max=94
-CPU 3: core_temp=41 package_temp=41 tj_max=94
-CPU 4: core_temp=34 package_temp=41 tj_max=94
-CPU 5: core_temp=34 package_temp=41 tj_max=94
-CPU 6: core_temp=33 package_temp=41 tj_max=94
-CPU 7: core_temp=41 package_temp=41 tj_max=94
+Found 8 CPU(s) in 1 socket(s)
+Socket #0 temp : 41 °C
+	Core #0 temp : 35 °C
+	Core #1 temp : 37 °C
+	Core #2 temp : 33 °C
+	Core #3 temp : 41 °C
+```
+
+A dual socket machine (Xeon E5506, no package thermal monitoring):
+
+```console
+# ./cputemp
+Found 8 CPU(s) in 2 socket(s)
+Socket #0
+        Core #0 temp : 39 °C
+        Core #1 temp : 36 °C
+        Core #2 temp : 40 °C
+        Core #3 temp : 33 °C
+Socket #1
+        Core #0 temp : 38 °C
+        Core #1 temp : 36 °C
+        Core #2 temp : 40 °C
+        Core #3 temp : 35 °C
 ```
