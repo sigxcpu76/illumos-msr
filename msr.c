@@ -39,6 +39,7 @@
 #include <sys/modctl.h>
 #include <sys/ddi.h>
 #include <sys/sunddi.h>
+#include <sys/systm.h>
 
 #include <sys/auxv.h>
 #include <sys/systeminfo.h>
@@ -150,8 +151,16 @@ msr_read(dev_t dev, uio_t *uio, cred_t *cr)
 		return (EINVAL);
 	}
 
-	if((error = checked_rdmsr(uoff, &msr)) != 0) {
-		return (error);
+	
+	label_t ljb;
+	if(on_fault(&ljb)) {
+		cmn_err(CE_NOTE, "Invalid rdmsr(%lu)", uoff);
+		return (EINVAL);
+	} else {
+		if((error = checked_rdmsr(uoff, &msr)) != 0) {
+			no_fault();
+			return (error);
+		}
 	}
 
 	if((error = uiomove(&msr, sizeof (msr), UIO_READ, uio)) != 0) {
@@ -181,8 +190,16 @@ msr_write(dev_t dev, uio_t *uio, cred_t *cr)
 	if((error = uiomove(&msr, sizeof(msr), UIO_WRITE, uio)) != 0) 
 		return (error);
 
-	if((error = checked_wrmsr(uoff, msr)) != 0) 
-		return (error);
+	label_t ljb;
+	if(on_fault(&ljb)) {
+		cmn_err(CE_NOTE, "Invalid wrmsr(%lu, %llu)", uoff, msr);
+		return (EINVAL);
+	} else {
+		if((error = checked_wrmsr(uoff, msr)) != 0) {
+			no_fault();
+			return (error);
+		}
+	}
 
 	return (0);
 }
