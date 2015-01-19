@@ -1,4 +1,4 @@
-CFLAGS=-Wall
+CFLAGS=-Wall -std=c99
 KFLAGS=-D_KERNEL -m64 -mcmodel=kernel -mno-red-zone -ffreestanding -nodefaultlibs
 LDFLAGS=-lkstat
 KLDFLAGS=-r 
