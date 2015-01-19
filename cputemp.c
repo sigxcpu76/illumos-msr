@@ -113,7 +113,7 @@ int main() {
           if(read_msr_on_cpu(cpu_index, 0x19c, &msr) == 0) {
             core_temp = tj_max - ((msr >> 16) & 0x7f);
           }
-          printf("\tCore #%d", core_ptr->core_id);
+          printf("\tCore #%d", cpu_core);
           if(core_temp >= 0) {
             printf(" temp : %d \u00B0C\n", core_temp);
           } else {
