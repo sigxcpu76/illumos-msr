@@ -15,7 +15,7 @@ cputemp: cputemp.c
 	gcc $(CFLAGS) -o cputemp $(LDFLAGS) cputemp.c
 
 clean: 
-	rm msr.o msr cputemp
+	rm -f msr.o msr cputemp
 
 install: all
 	cp msr /kernel/drv/amd64/
