@@ -154,7 +154,7 @@ msr_read(dev_t dev, uio_t *uio, cred_t *cr)
 	
 	label_t ljb;
 	if(on_fault(&ljb)) {
-		cmn_err(CE_NOTE, "Invalid rdmsr(%lu)", uoff);
+		cmn_err(CE_NOTE, "Invalid rdmsr(0x%08" PRIx32 ")", (uint32_t)uoff);
 		return (EINVAL);
 	} else {
 		if((error = checked_rdmsr(uoff, &msr)) != 0) {
@@ -192,7 +192,7 @@ msr_write(dev_t dev, uio_t *uio, cred_t *cr)
 
 	label_t ljb;
 	if(on_fault(&ljb)) {
-		cmn_err(CE_NOTE, "Invalid wrmsr(%lu, %llu)", uoff, msr);
+		cmn_err(CE_NOTE, "Invalid wrmsr(0x%016" PRIx32 ", 0x%032" PRIx64 ")", (uint32_t)uoff, (uint64_t)msr);
 		return (EINVAL);
 	} else {
 		if((error = checked_wrmsr(uoff, msr)) != 0) {
