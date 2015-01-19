@@ -64,7 +64,7 @@ int main() {
   }
 
 
-  printf("Found %d CPU(s) in %d socket(s)\n", cpu_count, cpu_sockets);
+  printf("Found %d CPU%s in %d socket%s\n", cpu_count, (cpu_count == 1) ? "" : "s", cpu_sockets, (cpu_sockets == 1) ? "" : "s");
 
   int cpu_socket, cpu_core, cpu_index;
   uint64_t msr;
