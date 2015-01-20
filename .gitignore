@@ -3,7 +3,7 @@
 sftp-config.json
 
 # Custom files
-coretemp
+coretemp/coretemp
 msr
 cpuinfo
 psrinfo
