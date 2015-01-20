@@ -1,4 +1,4 @@
-CFLAGS=-Wall -std=c99 -Wno-missing-braces
+CFLAGS=-Wall -std=gnu99 -Wno-missing-braces
 KFLAGS=-D_KERNEL -m64 -mcmodel=kernel -mno-red-zone -ffreestanding -nodefaultlibs
 LDFLAGS=-lkstat
 KLDFLAGS=-r 
