@@ -66,7 +66,6 @@ static dev_info_t *msr_devi;
 static int
 msr_getinfo(dev_info_t *devi, ddi_info_cmd_t cmd, void *arg, void **result)
 {
-	//cmn_err(CE_NOTE, "Inside _getinfo");
 	switch (cmd) {
 	case DDI_INFO_DEVT2DEVINFO:
 	case DDI_INFO_DEVT2INSTANCE:
@@ -93,9 +92,7 @@ msr_getinfo(dev_info_t *devi, ddi_info_cmd_t cmd, void *arg, void **result)
 static int
 msr_attach(dev_info_t *devi, ddi_attach_cmd_t cmd)
 {
-	//cmn_err(CE_NOTE, "Inside _attach");
 	if (cmd != DDI_ATTACH) {
-		//cmn_err(CE_NOTE, "Failed to attach");
 		return (DDI_FAILURE);
 	}
 	msr_devi = devi;
@@ -103,11 +100,10 @@ msr_attach(dev_info_t *devi, ddi_attach_cmd_t cmd)
 	int result = (ddi_create_minor_node(devi, MSR_DRIVER_SELF_NODE, S_IFCHR,
 	    MSR_SELF_MSR_MINOR, DDI_PSEUDO, 0));
 	if(result == 0) {
-		cmn_err(CE_NOTE, "Started MSR driver");
+		printf("MSR driver attached");
 	} else {
 		cmn_err(CE_NOTE, "Failed to start MSR driver: %d", result);
 	}
-	//cmn_err(CE_NOTE, "Attach result: %d", result);
 	return result;
 }
 
@@ -154,7 +150,7 @@ msr_read(dev_t dev, uio_t *uio, cred_t *cr)
 	
 	label_t ljb;
 	if(on_fault(&ljb)) {
-		cmn_err(CE_NOTE, "Invalid rdmsr(0x%08" PRIx32 ")", (uint32_t)uoff);
+		dev_err(msr_devi, CE_WARN, "Invalid rdmsr(0x%08" PRIx32 ")", (uint32_t)uoff);
 		return (EFAULT);
 	} else {
 		if((error = checked_rdmsr(uoff, &msr)) != 0) {
@@ -192,7 +188,7 @@ msr_write(dev_t dev, uio_t *uio, cred_t *cr)
 
 	label_t ljb;
 	if(on_fault(&ljb)) {
-		cmn_err(CE_NOTE, "Invalid wrmsr(0x%016" PRIx32 ", 0x%032" PRIx64 ")", (uint32_t)uoff, (uint64_t)msr);
+		dev_err(msr_devi, CE_WARN, "Invalid wrmsr(0x%08" PRIx32 ", 0x%016" PRIx64 ")", (uint32_t)uoff, (uint64_t)msr);
 		return (EFAULT);
 	} else {
 		if((error = checked_wrmsr(uoff, msr)) != 0) {
