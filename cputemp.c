@@ -8,6 +8,7 @@
 #include <sys/processor.h>
 #include <sys/procset.h>
 #include <kstat.h>
+#include <stdlib.h>
 
 #define DEV_CPUID "/dev/cpu/self/cpuid"
 #define DEV_MSR "/dev/cpu/self/msr"
@@ -32,7 +33,7 @@ int read_cpuid(uint32_t cpuid_func, regs_t *regs);
 int read_cpuid_on_cpu(int cpu_index, uint32_t cpuid_func, regs_t *regs);
 void temp_to_str(char *str, int temp);
 
-int main() {
+int main(int argc, char *argv[1]) {
 
   regs_t regs;
   kstat_ctl_t *kstat;
@@ -44,6 +45,18 @@ int main() {
     perror("kstat_open");
     return (1);
   }
+
+  int machine_readable = 0;
+  int display_cpu = -1;
+  if(argc > 1) {
+    if(!strcmp(argv[1], "-p")) {
+      machine_readable = 1;
+    }
+    if(argc > 2) {
+      display_cpu = atoi(argv[2]);
+    }
+  }
+
 
 
   for(cpu_count = 0; cpu_count < MAX_CPUS; cpu_count++) {
@@ -64,7 +77,7 @@ int main() {
   }
 
 
-  printf("Found %d CPU%s in %d socket%s\n", cpu_count, (cpu_count == 1) ? "" : "s", cpu_sockets, (cpu_sockets == 1) ? "" : "s");
+  if(!machine_readable) printf("Found %d CPU%s in %d socket%s\n", cpu_count, (cpu_count == 1) ? "" : "s", cpu_sockets, (cpu_sockets == 1) ? "" : "s");
 
   int cpu_socket, cpu_core, cpu_index;
   uint64_t msr;
@@ -101,11 +114,13 @@ int main() {
                 package_temp = tj_max - ((msr >> 16) & 0x7f);
               }
             }
-            printf("Socket #%d", core_ptr->chip_id);
-            if(package_temp >= 0) {
-              printf(" temp : %d \u00B0C\n", package_temp);
-            } else {
-              printf("\n");
+            if(!machine_readable) {
+              printf("Socket #%d", core_ptr->chip_id);
+              if(package_temp >= 0) {
+                printf(" temp : %d \u00B0C\n", package_temp);
+              } else {
+                printf("\n");
+              }
             }
           }
           // print core information
@@ -113,11 +128,19 @@ int main() {
           if(read_msr_on_cpu(cpu_index, 0x19c, &msr) == 0) {
             core_temp = tj_max - ((msr >> 16) & 0x7f);
           }
-          printf("\tCore #%d", cpu_core);
-          if(core_temp >= 0) {
-            printf(" temp : %d \u00B0C\n", core_temp);
+          if(!machine_readable) {
+            printf("\tCore #%d", cpu_core);
+            if(core_temp >= 0) {
+              printf(" temp : %d \u00B0C\n", core_temp);
+            } else {
+              printf("\n");
+            }
           } else {
-            printf("\n");
+            if(display_cpu == -1) {
+              printf("%d %d\n", core_ptr->cpu_index, core_temp);
+            } else if(display_cpu == core_ptr->cpu_index) {
+              printf("%d\n", core_temp);
+            }
           }
         }
       }
