@@ -1,4 +1,4 @@
-CFLAGS=-Wall -std=c99
+CFLAGS=-Wall -std=c99 -Wno-missing-braces
 KFLAGS=-D_KERNEL -m64 -mcmodel=kernel -mno-red-zone -ffreestanding -nodefaultlibs
 LDFLAGS=-lkstat
 KLDFLAGS=-r 
@@ -21,5 +21,5 @@ install: all
 	cp msr /kernel/drv/amd64/
 	cp msr.conf /kernel/drv/
 	rem_drv msr || true
-	add_drv msr
+	add_drv -m '* 0660 root sys' msr
 	ln -sf /devices/pseudo/msr@0:self /dev/cpu/self/msr
