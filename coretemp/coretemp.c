@@ -70,7 +70,7 @@ struct coretemp_kstat_t {
 
 kstat_t *entries[1024];
 
-int read_msr(uint32_t msr_index, uint64_t *result);
+int read_msr_on_cpu(cpu_t *cpu, uint32_t msr_index, uint64_t *result);
 
 static int coretemp_kstat_update(kstat_t *kstat, int rw) {
 	if(rw == KSTAT_WRITE) {
@@ -84,23 +84,22 @@ static int coretemp_kstat_update(kstat_t *kstat, int rw) {
 	uint64_t msr;
 	int cpu_index = (int)kstat->ks_private;
 
-	struct cpu_t *cpu_ptr = (struct cpu_t *)cpu[cpu_index];
-
+	cpu_t *cpu_ptr = (cpu_t *)cpu[cpu_index];
 
 	int tj_max = 100;
 
 	// tj max
-	if(read_msr(0x1a2, &msr) == 0) {
+	if(read_msr_on_cpu(cpu_ptr, 0x1a2, &msr) == 0) {
 		tj_max = (msr >> 16) & 0x7f;
 		coretemp_kstat_t.tj_max.value.ui64 = tj_max;
 	}
 
-	if(read_msr(0x1b1, &msr) == 0) {
+	if(read_msr_on_cpu(cpu_ptr, 0x1b1, &msr) == 0) {
 		int pkg_temp = tj_max - ((msr >> 16) & 0x7f);
 		coretemp_kstat_t.chip_temperature.value.ui64 = pkg_temp;
 	}
 
-	if(read_msr(0x19c, &msr) == 0) {
+	if(read_msr_on_cpu(cpu_ptr, 0x19c, &msr) == 0) {
 		int core_temp = tj_max - ((msr >> 16) & 0x7f);
 		coretemp_kstat_t.temperature.value.ui64 = core_temp;
 	}
@@ -108,8 +107,7 @@ static int coretemp_kstat_update(kstat_t *kstat, int rw) {
 	// misc data
 	coretemp_kstat_t.core_id.value.ui64 = cpuid_get_pkgcoreid(cpu_ptr);
 	coretemp_kstat_t.chip_id.value.ui64 = pg_plat_hw_instance_id(cpu_ptr, PGHW_CHIP);
-	
-	
+
 	
 	return (0);
 }
@@ -242,21 +240,41 @@ _info(struct modinfo *modinfo)
 
 
 // internal stuff
-int read_msr(uint32_t msr_index, uint64_t *result) {
-	int error;
+
+struct msr_req_t {
+	uint32_t msr_index;
+	uint64_t *result;
+};
+
+void msr_req_func(uintptr_t req_ptr, uintptr_t error_ptr) {
+	
 	label_t ljb;
+	uint32_t msr_index = ((struct msr_req_t *)req_ptr)->msr_index;
+	uint64_t *result = ((struct msr_req_t *)req_ptr)->result;
+
+	int error;
 
 	if(on_fault(&ljb)) {
 		dev_err(coretemp_devi, CE_WARN, "Invalid rdmsr(0x%08" PRIx32 ")", (uint32_t)msr_index);
-		return (EFAULT);
+		error = EFAULT;
 	} else {
-		if((error = checked_rdmsr(msr_index, result)) != 0) {
-			no_fault();
-			return (error);
-		}
+		error = checked_rdmsr(msr_index, result);
 	}
 
-	return (0);
+	*((int *)error_ptr) = error;
+
+	return;
 
 }
 
+int read_msr_on_cpu(cpu_t *cpu, uint32_t msr_index, uint64_t *result) {
+	int error;
+
+	struct msr_req_t request;
+	request.msr_index = msr_index;
+	request.result = result;
+
+	cpu_call(cpu, (cpu_call_func_t)msr_req_func, (uintptr_t)&request, (uintptr_t)&error);
+
+	return (error);
+}
